@@ -285,52 +285,64 @@ public class TweetController {
 				email = tweetUtil.getInputFromUser();
 
 				if (callFrom.equalsIgnoreCase(TweetConstants.LOGIN)) {
-					isEmailValidAndExists = validateAndverifyEmail(email, TweetConstants.LOGIN);
-					if (!isEmailValidAndExists) {
-						System.out.println("You are not a Registered User, Do you want to Register ?");
+					boolean validEmail = tweetUtil.validateEmail(email);
+					if (validEmail) {
+						isEmailValidAndExists = validateAndverifyEmail(email, TweetConstants.LOGIN);
+						if (!isEmailValidAndExists) {
+							System.out.println("You are not a Registered User, Do you want to Register ?");
 
-						boolean toRegistrationPage = false;
-						while (!toRegistrationPage) {
-							System.out.println("Press Y to go to Registration Page. Press N to Login Again.");
-							String userInput = tweetUtil.getInputFromUser();
+							boolean toRegistrationPage = false;
+							while (!toRegistrationPage) {
+								System.out.println("Press Y to go to Registration Page. Press N to Login Again.");
+								String userInput = tweetUtil.getInputFromUser();
 
-							if (userInput.equalsIgnoreCase("Y") || userInput.equalsIgnoreCase("N")) {
-								if (userInput.equalsIgnoreCase("Y")) {
-									displayRegistrationOptions();
+								if (userInput.equalsIgnoreCase("Y") || userInput.equalsIgnoreCase("N")) {
+									if (userInput.equalsIgnoreCase("Y")) {
+										displayRegistrationOptions();
+									} else {
+										displayLoginOptions();
+									}
 								} else {
-									displayLoginOptions();
+									System.out.println("Invalid User Input.");
 								}
-							} else {
-								System.out.println("Invalid User Input.");
 							}
 						}
+					} else {
+						System.out.println("Invalid Email. Please Enter a valid Email.");
 					}
+
 				} else if (callFrom.equalsIgnoreCase(TweetConstants.FORGOT_PASSWORD)) {
 					isEmailValidAndExists = validateAndverifyEmail(email, TweetConstants.FORGOT_PASSWORD);
 					if (!isEmailValidAndExists) {
 						System.out.println("Email not Exists");
 					}
 				} else {
-					isEmailValidAndExists = validateAndverifyEmail(email, TweetConstants.NEW_REGISTRATION);
-					if (!isEmailValidAndExists) {
-						System.out.println("You are already a Registered User, Do you want to Login ?");
-						boolean toLoginPage = false;
-						while (!toLoginPage) {
-							System.out.println("Press Y to go to Login Page. press N to go Register Again.");
-							String userInput = tweetUtil.getInputFromUser();
+					boolean validEmail = tweetUtil.validateEmail(email);
+					if (validEmail) {
+						isEmailValidAndExists = validateAndverifyEmail(email, TweetConstants.NEW_REGISTRATION);
+						if (!isEmailValidAndExists) {
+							System.out.println("You are already a Registered User, Do you want to Login ?");
+							boolean toLoginPage = false;
+							while (!toLoginPage) {
+								System.out.println("Press Y to go to Login Page. press N to go Register Again.");
+								String userInput = tweetUtil.getInputFromUser();
 
-							if (userInput.equalsIgnoreCase("Y") || userInput.equalsIgnoreCase("N")) {
-								if (userInput.equalsIgnoreCase("Y")) {
-									displayLoginOptions();
+								if (userInput.equalsIgnoreCase("Y") || userInput.equalsIgnoreCase("N")) {
+									if (userInput.equalsIgnoreCase("Y")) {
+										displayLoginOptions();
+									} else {
+										displayRegistrationOptions();
+									}
 								} else {
-									displayRegistrationOptions();
+									System.out.println("Invalid User Input.");
 								}
-							} else {
-								System.out.println("Invalid User Input.");
 							}
-						}
 
+						}
+					} else {
+						System.out.println("Invalid Email. Please Enter a valid Email.");
 					}
+
 				}
 			}
 
@@ -438,28 +450,20 @@ public class TweetController {
 	}
 
 	private boolean validateAndverifyEmail(String email, String callFrom) {
-		boolean validEmail = tweetUtil.validateEmail(email);
-		if (validEmail) {
-			boolean isEmailExists = tweetService.verifyEmailExists(email);
-			if (isEmailExists && callFrom.equalsIgnoreCase(TweetConstants.LOGIN)) {
-				return true;
-			} else if (!isEmailExists && callFrom.equalsIgnoreCase(TweetConstants.LOGIN)) {
-				return false;
-			} else if (isEmailExists && callFrom.equalsIgnoreCase(TweetConstants.NEW_REGISTRATION)) {
-				return false;
-			} else if (!isEmailExists && callFrom.equalsIgnoreCase(TweetConstants.NEW_REGISTRATION)) {
-				return true;
-			} else if (isEmailExists && callFrom.equalsIgnoreCase(TweetConstants.FORGOT_PASSWORD)) {
-				return true;
-			} else {
-				return false;
-			}
-
+		boolean isEmailExists = tweetService.verifyEmailExists(email);
+		if (isEmailExists && callFrom.equalsIgnoreCase(TweetConstants.LOGIN)) {
+			return true;
+		} else if (!isEmailExists && callFrom.equalsIgnoreCase(TweetConstants.LOGIN)) {
+			return false;
+		} else if (isEmailExists && callFrom.equalsIgnoreCase(TweetConstants.NEW_REGISTRATION)) {
+			return false;
+		} else if (!isEmailExists && callFrom.equalsIgnoreCase(TweetConstants.NEW_REGISTRATION)) {
+			return true;
+		} else if (isEmailExists && callFrom.equalsIgnoreCase(TweetConstants.FORGOT_PASSWORD)) {
+			return true;
 		} else {
-			System.out.println("Invalid Email. Please Enter a valid Email.");
 			return false;
 		}
-
 	}
 
 }
